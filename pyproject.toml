@@ -1,0 +1,35 @@
+[project]
+name = "ufmcli"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "PaologGithub" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "protobuf===3.20.0",
+    "tqdm>=4.70.1",
+    "panda3d===1.11.0"
+]
+
+[tool.uv]
+environments = [
+    "sys_platform == 'win32'",
+    "sys_platform == 'linux'",
+    "sys_platform == 'darwin'",
+]
+
+[tool.uv.sources]
+panda3d = [
+    { url = "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-win_amd64.whl", marker = "sys_platform == 'win32'" },
+    { url = "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-manylinux2014_x86_64.whl", marker = "sys_platform == 'linux'" },
+    { url = "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-macosx_11_0_universal2.whl", marker = "sys_platform == 'darwin'" }
+]
+
+[project.scripts]
+ufmcli = "ufmcli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
