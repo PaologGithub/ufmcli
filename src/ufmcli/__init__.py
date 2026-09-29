@@ -2,7 +2,7 @@ import sys
 
 import questionary
 
-from ufmcli.helpers import error, get_java_major, has_module, panic
+from ufmcli.helpers import error, get_java_major, has_module, panic, parse_args
 
 PANDA3D_BINARIES = {
     "win32": "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-win_amd64.whl",
@@ -15,6 +15,15 @@ osver = sys.platform
 java  = ""
 
 def main() -> None:
+    args = parse_args()
+    build_dir = args.project_dir / "build"
+    build_cli_dir = build_dir / "ufmcli"
+    toml_path = args.project_dir / "project" / "settings.toml"
+
+    if not toml_path.exists():
+        panic(f"{args.project_dir} is not a valid UfM project", ["Choose a path using ufmcli <project_dir>"])
+
+
     # Check python version == 3.13
     if sys.version_info[:2] != (3, 13):
         panic(
@@ -37,7 +46,7 @@ def main() -> None:
         panic("Protobuf isn't installed", ["To install protobuf, run: ", "pip install protobuf===3.20.0"])
 
     # Android dependencies
-    java = get_java_major("jav")
+    java = get_java_major("java")
     while java is None or java < 8:
         error("No valid java found", ["Select a java version", "Install java >= 8"])
         choice = questionary.select(
@@ -56,4 +65,8 @@ def main() -> None:
             case "Automatically install java":
                 # TODO: Implement this
                 panic("Java automatic implementation isn't implemented yet")
-    print(f"Using java {java}")
+    print(f"Using Java {java}")
+
+    build_dir.mkdir(exist_ok=True)
+    build_cli_dir.mkdir(exist_ok=True)
+    

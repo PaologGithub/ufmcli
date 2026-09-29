@@ -12,6 +12,7 @@ dependencies = [
     "tqdm>=4.70.1",
     "panda3d===1.11.0",
     "questionary>=2.1.1",
+    "argparse>=1.4.0",
 ]
 
 [tool.uv]

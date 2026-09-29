@@ -2,7 +2,10 @@ import re
 import shutil
 import subprocess
 import sys
+from argparse import ArgumentParser
+from dataclasses import dataclass
 from importlib.util import find_spec
+from pathlib import Path
 
 import colorama
 
@@ -43,3 +46,23 @@ def get_java_major(jvm: str | None = None) -> int | None:
     major = int(match.group(1))
     
     return int(match.group(2)) if major == 1 and match.group(2) else major
+
+@dataclass(frozen=True)
+class Arguments:
+    project_dir: Path
+
+def parse_args() -> Arguments:
+    parser = ArgumentParser(
+        prog="ufmcli",
+        description="UrsinaForMobile build tool",
+    )
+    parser.add_argument(
+        "project_dir",
+        nargs="?",
+        default=".",
+        type=Path,
+        help="Path to the project directory (default: current directory)",
+    )
+    args = parser.parse_args()
+
+    return Arguments(args.project_dir)
