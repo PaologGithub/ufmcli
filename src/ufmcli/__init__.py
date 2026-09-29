@@ -1,12 +1,8 @@
 import sys
-from importlib.util import find_spec
 
-import colorama
+import questionary
 
-RED   = colorama.Fore.RED
-LRED  = colorama.Fore.LIGHTRED_EX
-PINK  = colorama.Fore.LIGHTMAGENTA_EX
-RESET = colorama.Fore.RESET
+from ufmcli.helpers import error, get_java_major, has_module, panic
 
 PANDA3D_BINARIES = {
     "win32": "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-win_amd64.whl",
@@ -14,19 +10,9 @@ PANDA3D_BINARIES = {
     "darwin": "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-macosx_11_0_universal2.whl"
 }
 
-# Helpers
-def panic(message: str, tips: list[str | None] | None = None):
-    """Panic the ufmcli with the message"""
-    print(f"{RED}{message}{RESET}")
-    if tips is not None:
-        [print(f"{LRED}> {PINK}{tip}{RESET}") for tip in tips if tip is not None]
-
-    sys.exit(1)
-def has_module(name: str) -> bool:
-    try:
-        return find_spec(name) is not None
-    except ModuleNotFoundError:
-        return False
+# Informations
+osver = sys.platform
+java  = ""
 
 def main() -> None:
     # Check python version == 3.13
@@ -35,16 +21,39 @@ def main() -> None:
             "Python interpreter should only be 3.13",
             [f"Replace Python {sys.version} with Py3.13"]
         )
+    print(f"Using Python {sys.version}")
 
     # Python dependency check
     if not has_module("panda3d"):
-        panda3d_binary_tip = PANDA3D_BINARIES.get(sys.platform)
+        panda3d_binary_tip = PANDA3D_BINARIES.get(osver)
         panic(
             "Panda3D wasn't found",
             [
-                "Install panda3d on your python environment" + (f"; for platform {sys.platform}, run: " if panda3d_binary_tip else ""),
+                "Install panda3d on your python environment" + (f"; for platform {osver}, run: " if panda3d_binary_tip else ""),
                 f"pip install {panda3d_binary_tip}" if panda3d_binary_tip else None
             ]
         )
     if not has_module("google.protobuf"):
         panic("Protobuf isn't installed", ["To install protobuf, run: ", "pip install protobuf===3.20.0"])
+
+    # Android dependencies
+    java = get_java_major("jav")
+    while java is None or java < 8:
+        error("No valid java found", ["Select a java version", "Install java >= 8"])
+        choice = questionary.select(
+            "What do you want to do?",
+            choices = [
+                "Select a java interpreter",
+                "Install java manually",
+                "Automatically install java"
+            ]
+        ).ask()
+        match choice:
+            case "Select a java interpreter":
+                java = get_java_major(questionary.path("Enter a java interpreter >").ask())
+            case "Install java manually":
+                panic("No valid java found", ["Install java >= 8"])
+            case "Automatically install java":
+                # TODO: Implement this
+                panic("Java automatic implementation isn't implemented yet")
+    print(f"Using java {java}")
