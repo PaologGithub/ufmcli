@@ -1,6 +1,8 @@
 import sys
 
 import questionary
+import requests
+from tqdm import tqdm
 
 from ufmcli.helpers import error, get_java_major, has_module, panic, parse_args
 
@@ -9,6 +11,7 @@ PANDA3D_BINARIES = {
     "linux": "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-manylinux2014_x86_64.whl",
     "darwin": "https://buildbot.panda3d.org/downloads/b32d5c672441c280f7e799483d223e252cf9f797/panda3d-1.11.0.dev3788-cp313-cp313-macosx_11_0_universal2.whl"
 }
+BUNDLETOOL_BINARY = "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar"
 
 # Informations
 osver = sys.platform
@@ -16,8 +19,11 @@ java  = ""
 
 def main() -> None:
     args = parse_args()
+    
     build_dir = args.project_dir / "build"
     build_cli_dir = build_dir / "ufmcli"
+    bundletool_path = build_cli_dir / "bundletool.jar"
+
     toml_path = args.project_dir / "project" / "settings.toml"
 
     if not toml_path.exists():
@@ -69,4 +75,12 @@ def main() -> None:
 
     build_dir.mkdir(exist_ok=True)
     build_cli_dir.mkdir(exist_ok=True)
-    
+    if not bundletool_path.exists():
+        response = requests.get(BUNDLETOOL_BINARY, stream=True)
+        total_size = int(response.headers.get('content-length', 0))
+        block_size = 1024 
+        with tqdm(total=total_size, unit='B', unit_scale=True, desc="Downloading bundletool") as progress_bar, open(bundletool_path, 'wb') as file:
+                for chunk in response.iter_content(chunk_size=block_size):
+                    if chunk:
+                        file.write(chunk)
+                        progress_bar.update(len(chunk))
