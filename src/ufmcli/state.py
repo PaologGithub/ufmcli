@@ -6,6 +6,7 @@ from typing import ClassVar
 
 @dataclass()
 class PathData:
+    project_path: ClassVar[Path]    = None  # type: ignore
     build_dir: ClassVar[Path]       = None  # type: ignore
     build_cli_dir: ClassVar[Path]   = None  # type: ignore
     bundletool_path: ClassVar[Path] = None  # type: ignore
@@ -13,6 +14,7 @@ class PathData:
 
     @staticmethod
     def from_path(path: Path):
+        PathData.project_path    = path
         PathData.build_dir       = path / "build"
         PathData.build_cli_dir   = PathData.build_dir / "ufmcli"
         PathData.bundletool_path = PathData.build_cli_dir / "bundletool.jar"

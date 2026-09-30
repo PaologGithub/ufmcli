@@ -1,3 +1,4 @@
+import subprocess
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -7,6 +8,7 @@ import typer
 from rich.console import Console
 from rich.progress import Progress
 
+from ufmcli.build import build_project
 from ufmcli.check import check_or_exit
 from ufmcli.state import AppState
 
@@ -56,7 +58,10 @@ def build(
                     progress.update(task, advance=len(chunk))
 
     with console.status("Building"):
-        build()
+        build_project(state, console)
+        dist_path = state.paths.project_path / "dist"
+        subprocess.run(f"{state.java_command} -jar {state.paths.bundletool_path} build-apks --bundle {dist_path / "*.aab"} --output {dist_path / "app.apks"}", check=False)
+        console.print(f"[green]:white_check_mark:[/] Built {dist_path / "app.apks"}")
 
 @app.command()
 def check(project_dir: ProjectDir = Path("."), java_command: JavaCommand = "java") -> None:

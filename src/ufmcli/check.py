@@ -10,7 +10,9 @@ from rich.console import Console
 from ufmcli.helpers import get_java_major, has_module
 from ufmcli.state import AppState
 
-MIN_JAVA = 8
+# Bundletool is registered for java >=8, but that's only for java >= 11
+# java.lang.UnsupportedClassVersionError: com/android/ddmlib/Log$ILogOutput has been compiled by a more recent version of the Java Runtime (class file version 55.0) [java 11]
+MIN_JAVA = 11
 
 
 class CheckProblem(Enum):
