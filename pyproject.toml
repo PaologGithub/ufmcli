@@ -9,11 +9,11 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "protobuf===3.20.0",
-    "tqdm>=4.70.1",
     "panda3d===1.11.0",
-    "questionary>=2.1.1",
     "argparse>=1.4.0",
     "requests>=2.34.2",
+    "typer>=0.27.2",
+    "questionary>=2.1.1",
 ]
 
 [tool.uv]
@@ -31,7 +31,7 @@ panda3d = [
 ]
 
 [project.scripts]
-ufmcli = "ufmcli:main"
+ufmcli = "ufmcli.__main__:app"
 
 [build-system]
 requires = ["uv_build>=0.12.3,<0.13.0"]
