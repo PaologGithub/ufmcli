@@ -29,19 +29,19 @@ def has_module(name: str) -> bool:
     except ModuleNotFoundError:
         return False
     
-def get_java_major(jvm: str | None = None) -> int | None:
+def get_java_major(jvm: str | None = None) -> int:
     java = shutil.which(jvm if jvm else "java")
     if java is None:
-        return None
+        return 0
     
     try:
         result = subprocess.run([java, "-version"], capture_output=True, text=True, check=True)
     except (OSError, subprocess.CalledProcessError):
-        return None
+        return 0
     
     match = re.search(r'version "(\d+)(?:\.(\d+))?', result.stderr)
     if not match:
-        return None
+        return 0
     
     major = int(match.group(1))
     
