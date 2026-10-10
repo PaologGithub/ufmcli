@@ -7,8 +7,8 @@ import questionary
 import typer
 from rich.console import Console
 
-from ufmcli.helpers import get_java_major, has_module
-from ufmcli.state import AppState
+from ufmcli.helpers.java import get_java_major, has_module
+from ufmcli.state.app import AppState
 
 # Bundletool is registered for java >=8, but that's only for java >= 11
 # java.lang.UnsupportedClassVersionError: com/android/ddmlib/Log$ILogOutput has been compiled by a more recent version of the Java Runtime (class file version 55.0) [java 11]

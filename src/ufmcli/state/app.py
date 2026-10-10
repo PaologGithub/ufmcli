@@ -4,22 +4,22 @@ from pathlib import Path
 from typing import ClassVar
 
 
-@dataclass()
+@dataclass(frozen=True)
 class PathData:
-    project_path: ClassVar[Path]    = None  # type: ignore
-    build_dir: ClassVar[Path]       = None  # type: ignore
-    build_cli_dir: ClassVar[Path]   = None  # type: ignore
-    bundletool_path: ClassVar[Path] = None  # type: ignore
-    settings_path: ClassVar[Path]   = None  # type: ignore
+    project: Path
 
-    @staticmethod
-    def from_path(path: Path):
-        PathData.project_path    = path
-        PathData.build_dir       = path / "build"
-        PathData.build_cli_dir   = PathData.build_dir / "ufmcli"
-        PathData.bundletool_path = PathData.build_cli_dir / "bundletool.jar"
-        
-        PathData.settings_path   = path / "project" / "settings.toml"
+    @property
+    def settings(self) -> Path:       return self.project / "project" / "settings.toml"
+    
+    @property
+    def build_dir(self) -> Path:      return self.project / "build"
+    @property
+    def ufm_build_dir(self) -> Path:  return self.build_dir / "ufmcli"
+    @property
+    def bundletool(self) -> Path:     return self.ufm_build_dir / "bundletool.jar"
+
+    @property
+    def dist(self) -> Path:           return self.project / "dist" 
 
 @dataclass()
 class AppState:
@@ -37,4 +37,4 @@ class AppState:
     os_name        = sys.platform
     python_version = sys.version
 
-    paths          = PathData()
+    paths: PathData = None # type: ignore
