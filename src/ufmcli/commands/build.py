@@ -5,7 +5,6 @@ import zlib
 from contextlib import chdir
 from hashlib import file_digest
 from pathlib import Path
-from threading import Thread
 
 import requests
 import typer
@@ -52,7 +51,7 @@ def prepare(state: AppState):
                     file.write(chunk)
                     progress.update(task, advance=len(chunk))
 
-def build_aab(state: AppState):
+def build_aab(state: AppState, abis: list[str]):
     with open(state.paths.settings, "rb") as file:
         content = tomllib.load(file)
 
@@ -81,6 +80,7 @@ def build_aab(state: AppState):
                 "build_apps": {
                     "application_id": app_id,
                     "android_version_code": app_vercode,
+                    "android_abis": abis,
                     "platforms": app_platforms,  # type: ignore
 
                     "gui_apps": {
@@ -131,7 +131,8 @@ def build_command(
     state:        AppState,
     console:      Console,
 
-    skip_checks:  bool
+    skip_checks:  bool,
+    selected_abi: list[str]
 ) -> None:
     """Build the android app"""
     if not skip_checks:
@@ -149,9 +150,7 @@ def build_command(
         ) as progress:
             setup_assets(state.paths.project / "assets", progress)
         try:
-            thread = Thread(target=lambda: build_aab(state))
-            thread.start()
-            thread.join()
+            build_aab(state, selected_abi)
         except SystemExit as e:
             console.print(f"[red]:cross_mark:[/] Build failed: {e}")
             raise typer.Exit(code=1)

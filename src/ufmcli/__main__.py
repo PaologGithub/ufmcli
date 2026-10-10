@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from typing import Annotated
 
+import click
 import typer
 from rich.console import Console
 
@@ -23,7 +24,20 @@ JavaCommand = Annotated[
     str,
     typer.Option("--java-command", envvar="UFM_JAVA", help="Path to the java executable")
 ]
-
+SelectedAbi = Annotated[
+    list[str],
+    typer.Option(
+        "--abi",
+        click_type=click.Choice([
+            "arm64-v8a",
+            "armeabi-v7a",
+            "x86",
+            "x86_64",
+            "all",
+        ]), # type: ignore
+        help="Target ABI",
+    ),
+]
 state = AppState()
 console = Console()
 
@@ -31,12 +45,17 @@ console = Console()
 def build(
     project_dir:  ProjectDir = Path("."),
     skip_checks:  Annotated[bool, typer.Option("--skip-check", help="Skip environment checks")] = False,
-    java_command: JavaCommand = "java"
+    java_command: JavaCommand = "java",
+    selected_abi: SelectedAbi = ["all"]  # noqa: B006
 ) -> None:
     state.paths = PathData(project_dir)
     state.java_command = java_command
+
+    if "all" in selected_abi:
+        selected_abi = ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"]
+    
     build_command(
-        state, console, skip_checks
+        state, console, skip_checks, selected_abi
     )
 
 @app.command()
