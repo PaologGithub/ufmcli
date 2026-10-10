@@ -14,6 +14,7 @@ For now, because UfMCLI is in beta, it's not available in PyPi. Here are the req
 |------------------|-----------------------|-----------------------|---------|
 | `<project_dir>`  | Project directory     | Any folder path       | `.`     |
 | `--java-command` | Java command to use   | Any `java`/`java.exe` | `java`  |
+|------------------|-----------------------|-----------------------|---------|
 
 **Goal:** Check the current environment, to see that everything works.
 **Examples:**
@@ -27,6 +28,8 @@ For now, because UfMCLI is in beta, it's not available in PyPi. Here are the req
 | `--skip-check`   | Skip env check        | Skips if entered      | `False` |
 | `--java-command` | Java command to use   | Any `java`/`java.exe` | `java`  |
 | `--abi`          | Android ABI to build  | `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64`, `all` | `all`  |
+|------------------|-----------------------|-----------------------|---------|
+
 **Goal:** Builds the UfM project
 **Examples:**
 - `ufmcli build`
@@ -39,6 +42,7 @@ For now, because UfMCLI is in beta, it's not available in PyPi. Here are the req
 |------------------|-----------------------|-----------------------|---------|
 | `<project_dir>`  | Project directory     | Any folder path       | `.`     |
 | `--java-command` | Java command to use   | Any `java`/`java.exe` | `java`  |
+|------------------|-----------------------|-----------------------|---------|
 
 **Goal:** Install the application. You need a device connected to ADB
 **Examples:**
